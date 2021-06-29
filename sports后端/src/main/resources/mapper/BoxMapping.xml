@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sport.sports.dao.BoxDao">
+
+
+
+    <insert id="addbox">
+        INSERT INTO box
+        (boxid,boxtype,boxowner,boxweight,boxstate)
+        VALUE
+        (#{boxid},#{boxtype},#{boxowner},#{boxweight},#{boxstate})
+    </insert>
+
+    <select id="checkboxid" resultType="java.lang.Integer">
+        select count(*) from `box`
+        where boxid like #{boxid}
+    </select>
+
+    <select id="showboxstate" resultType="com.sport.sports.Bean.Box">
+        SELECT * FROM `box`
+        WHERE  boxid like #{boxid}
+    </select>
+
+    <select id="getBoxCounts" resultType="java.lang.Integer">
+        SELECT count(*) FROM `box`
+            WHERE boxid like #{boxid}
+    </select>
+
+    <update id="updateboxstate">
+        UPDATE box SET
+        boxstate = #{placeA} WHERE boxid = #{boxid}
+    </update>
+
+    <update id="updateboxisempty">
+        UPDATE box,orderlist  SET box.isempty='空'
+        WHERE box.boxid = #{boxid} AND orderlist.endaddress=#{placeB}
+    </update>
+</mapper>

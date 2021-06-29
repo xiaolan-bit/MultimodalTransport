@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sport.sports.dao.OfferDao">
+
+    <select id="getOfferCounts" resultType="java.lang.Integer">
+        SELECT count(*) FROM `offer`
+        <if test="offerid !=null ">
+            WHERE offerid like #{offerid}
+        </if>
+    </select>
+
+    <insert id="addOffer">
+        INSERT INTO offer
+        (offerid,orderid,offerman,money,offername)
+        VALUE
+        (#{offerid},#{orderid},#{offerman},#{money},#{offername})
+    </insert>
+
+    <select id="showoffer" resultType="com.sport.sports.Bean.Offer">
+    select  * from
+    offer inner join orderlist on(orderlist.orderid=offer.orderid )where orderlist.userid=#{userid}
+    </select>
+
+    <update id="confirmoffer">
+        UPDATE orderlist SET personchargenow = #{offerman}, money = #{money},
+        route = '正在规划路线' WHERE orderid = #{orderid}
+    </update>
+
+    <delete id="deleteoffer">
+        DELETE FROM offer WHERE orderid = #{orderid}
+    </delete>
+</mapper>

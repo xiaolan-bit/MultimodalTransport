@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sport.sports.dao.RouteDao">
+
+    <insert id="addRoute">
+        INSERT INTO route
+        (orderid,placeA,placeAtime,placeB,placeBtime,way,transnum,personchargeid,personcharge,telnum)
+        VALUE
+        (#{orderid},#{placeA},#{placeAtime},#{placeB},#{placeBtime},#{way},#{transnum},#{personchargeid},#{personcharge},#{telnum})
+    </insert>
+
+    <select id="getroute" resultType="com.sport.sports.Bean.Route">
+        SELECT * FROM `route`
+            WHERE orderid = #{orderid}
+    </select>
+
+    <select id="getRouteCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM `route`
+            WHERE orderid = #{orderid}
+
+    </select>
+
+    <select id="getmypersonchargeroute" resultType="com.sport.sports.Bean.Route">
+        SELECT * FROM `route`
+            WHERE personchargeid = #{userid}
+               ORDER BY placeAtime ASC
+    </select>
+
+
+
+    <select id="getAllRoute" resultType="com.sport.sports.Bean.Route">
+        SELECT * FROM `route`
+            WHERE placeA LIKE #{placeA}  OR
+						placeB LIKE  #{placeA} OR placeB LIKE #{placeB} OR placeA LIKE #{placeB}
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+
+    <select id="getRouteCounts" resultType="java.lang.Integer">
+        SELECT count(*) FROM `route`
+            WHERE ( placeA LIKE "%"#{placeA,jdbcType=VARCHAR}"%"  OR
+					placeB LIKE  "%"#{placeA,jdbcType=VARCHAR}"%" OR
+					placeB LIKE "%"#{placeB,jdbcType=VARCHAR}"%" OR
+					placeA LIKE "%"#{placeB,jdbcType=VARCHAR}"%")
+
+    </select>
+
+    <select id="showroute" resultType="com.sport.sports.Bean.Route">
+        SELECT * FROM `route`
+            WHERE ( placeA LIKE "%"#{placeA,jdbcType=VARCHAR}"%"  OR
+					placeB LIKE  "%"#{placeA,jdbcType=VARCHAR}"%" OR
+					placeB LIKE "%"#{placeB,jdbcType=VARCHAR}"%" OR
+					placeA LIKE "%"#{placeB,jdbcType=VARCHAR}"%")
+
+
+    </select>
+
+    <update id="updateliststate">
+        UPDATE route SET personchargeid = #{personchargeid}
+        WHERE orderid = #{orderid} AND placeA = #{placeA} AND placeB = #{placeB}
+        AND way = #{way} AND transnum = #{transnum}
+        AND personcharge = #{personcharge} AND telnum = #{telnum}
+    </update>
+
+    <select id="timetuijian" resultType="com.sport.sports.Bean.Route">
+        SELECT d.username as personcharge,c.orderid as orderid,a.placeA as placeA,b.placeB as placeB,TIMESTAMPDIFF(HOUR ,a.placeAtime,b.placeBtime) AS personchargeid
+        FROM route a , route b,orderlist c,easyuser d
+WHERE a.orderid=b.orderid AND (a.placeA LIKE "%"#{startaddress,jdbcType=VARCHAR}"%"
+                and
+					b.placeB LIKE  "%"#{endaddress,jdbcType=VARCHAR}"%") AND a.orderid=c.orderid AND c.personchargenow=d.id
+GROUP BY a.orderid ORDER BY personchargeid ASC LIMIT 3
+    </select>
+
+
+    <select id="showtuijianroute" resultType="com.sport.sports.Bean.Route">
+        SELECT c.* FROM route a, route b,route c
+        WHERE a.orderid=#{orderid} AND b.orderid=#{orderid} AND c.orderid=#{orderid} AND a.placeA=#{placeA} AND b.placeB=#{placeB}
+        AND c.placeAtime>=a.placeAtime AND b.placeBtime>=c.placeBtime
+    </select>
+
+    <select id="showplaceAs" resultType="java.lang.String">
+        SELECT c.placeA FROM route a, route b,route c
+        WHERE a.orderid=#{orderid} AND b.orderid=#{orderid} AND c.orderid=#{orderid} AND a.placeA=#{placeA} AND b.placeB=#{placeB}
+        AND c.placeAtime>=a.placeAtime AND b.placeBtime>=c.placeBtime
+    </select>
+</mapper>

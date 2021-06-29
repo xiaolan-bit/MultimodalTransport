@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sport.sports.dao.EvaluateDao">
+
+    <insert id="addevaluate">
+        INSERT INTO evaluate
+        (orderid,goodsname,offerman,timeevaluate,altitudeevaluate,transevaluate)
+        VALUE
+        (#{orderid},#{goodsname},#{offerman},#{timeevaluate},#{altitudeevaluate},#{transevaluate})
+    </insert>
+
+    <select id="getbestorder" resultType="com.sport.sports.Bean.Evaluate">
+        SELECT  offerman, FORMAT(AVG(timeevaluate),1) as timeevaluate,FORMAT(AVG(altitudeevaluate),1) as altitudeevaluate,FORMAT(AVG(transevaluate),1) as transevaluate
+        FROM `evaluate`
+        GROUP BY offerman
+        ORDER BY timeevaluate+altitudeevaluate+transevaluate DESC LIMIT 3
+
+    </select>
+</mapper>

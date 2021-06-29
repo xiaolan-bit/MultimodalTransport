@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sport.sports.dao.MessageDao">
+
+    <insert id="addmessage">
+        INSERT INTO message
+        (place,transnum,timenow,inoutside)
+        VALUE
+        (#{place},#{transnum},#{timenow},#{inoutside})
+    </insert>
+
+    <select id="getmessage" resultType="com.sport.sports.Bean.Message">
+        SELECT * FROM message
+        where place = #{place}
+    </select>
+</mapper>

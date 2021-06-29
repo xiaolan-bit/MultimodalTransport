@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sport.sports.dao.OrderDao">
+
+
+    <select id="getAllOrder" resultType="com.sport.sports.Bean.Order">
+        SELECT * FROM orderlist
+        <if test="orderid !=null ">
+            WHERE orderid like #{orderid}
+        </if>
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+
+    <select id="getOrderCounts" resultType="java.lang.Integer">
+        SELECT count(*) FROM `orderlist`
+        <if test="orderid !=null ">
+            WHERE orderid like #{orderid}
+        </if>
+    </select>
+
+    <select id="getAllmyOrder" resultType="com.sport.sports.Bean.Order">
+        SELECT * FROM orderlist
+        <if test="userid !=null ">
+            WHERE userid = #{userid}
+        </if>
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+
+    <select id="getOrderCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM `orderlist`
+        <if test="userid !=null ">
+            WHERE userid like #{userid}
+        </if>
+    </select>
+
+    <insert id="addOrder">
+        INSERT INTO orderlist
+        (orderid,route,startaddress,personchargenow,endaddress,receivername,receivertelnum,userid,boxid,goodsname,goodssize,goodsweight,inoutside)
+        VALUE
+        (#{orderid},#{route},#{startaddress},#{offerman},#{endaddress},#{receivername},#{receivertelnum},#{userid},#{boxid},#{goodsname},#{goodssize},#{goodsweight},#{inoutside})
+    </insert>
+
+    <insert id="addmyOrder">
+        INSERT INTO orderlist
+        (orderid,route,startaddress,personchargenow,endaddress,receivername,receivertelnum,userid,boxid,goodsname,goodssize,goodsweight,inoutside)
+        VALUE
+        (#{orderid},#{route},#{startaddress},#{offerman},#{endaddress},#{receivername},#{receivertelnum},#{userid},#{boxid},#{goodsname},#{goodssize},#{goodsweight},#{inoutside})
+    </insert>
+
+    <select id="showorder" resultType="com.sport.sports.Bean.Order">
+        SELECT * FROM `orderlist`
+                            WHERE userid = #{userid}
+    </select>
+
+    <select id="getNeworder" resultType="com.sport.sports.Bean.Order">
+        SELECT * FROM `orderlist`
+        WHERE route = '正在等候接单' ORDER BY orderid DESC
+    </select>
+
+    <select id="getmyNeworder" resultType="com.sport.sports.Bean.Order">
+        SELECT * FROM `orderlist`
+        WHERE route = '已指定货代' and (personchargenow = #{username} or personchargenow=#{userid})
+    </select>
+
+    <select id="showorderstate" resultType="com.sport.sports.Bean.Order">
+        SELECT * FROM `orderstate`
+        WHERE  orderid like #{orderid}
+        ORDER BY timerecord DESC
+    </select>
+
+    <select id="getAllOrderstate" resultType="com.sport.sports.Bean.Order">
+        SELECT * FROM orderstate
+        <if test="orderid !=null ">
+            WHERE orderid like #{orderid}
+        </if>
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+
+    <select id="getOrderstateCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM `orderstate`
+        <if test="orderid !=null ">
+            WHERE orderid like #{orderid}
+        </if>
+    </select>
+
+    <select id="getorder" resultType="com.sport.sports.Bean.Order">
+        SELECT * FROM `orderlist`
+            WHERE orderid like #{orderid}
+    </select>
+
+    <select id="gethuodaiorder" resultType="com.sport.sports.Bean.Order">
+        SELECT * FROM `orderlist`
+                            WHERE personchargenow = #{userid} AND route = '正在规划路线'
+    </select>
+
+    <update id="updateorder">
+        UPDATE orderlist SET
+        route = '路线规划完成' WHERE orderid = #{orderid}
+    </update>
+
+    <insert id="addorderstate">
+        INSERT INTO orderstate
+        (orderid,timerecord,lateststatus,location)
+        VALUE
+        (#{orderid},#{timerecord},#{lateststatus},#{location})
+    </insert>
+
+    <update id="checkrouteend" >
+        UPDATE orderlist SET state = '已完成' WHERE orderid=#{orderid} AND endaddress=#{endaddress}
+    </update>
+
+    <select id="getcompleteorder" resultType="com.sport.sports.Bean.Order">
+        SELECT orderlist.personchargenow,orderlist.orderid,orderlist.goodsname,easyuser.username as offerman from easyuser,orderlist
+        where orderlist.userid = #{userid} AND orderlist.state = '已完成' AND orderlist.personchargenow=easyuser.id
+    </select>
+
+    <update id="updateorderstate">
+        UPDATE orderlist SET state = '已评价' WHERE orderid=#{orderid}
+    </update>
+
+    <update id="addboxid">
+        UPDATE orderlist SET boxid=#{boxid} where orderid=#{orderid}
+    </update>
+
+    <update id="checkofferman">
+        UPDATE orderlist SET route = '已指定货代' and personchargenow = #{userid}
+    </update>
+
+    <select id="getmyid" resultType="java.lang.Integer">
+        SELECT id from easyuser where username = #{username}
+    </select>
+
+    <select id="getboxid" resultType="java.lang.String">
+        SELECT boxid from `orderlist`
+            WHERE orderid = #{orderid}
+    </select>
+
+    <select id="getsannum" resultType="java.lang.Integer">
+        select COUNT(*) from orderlist where boxid is null or boxid=''
+    </select>
+
+    <select id="getxiangnum" resultType="java.lang.Integer">
+        select COUNT(*) from orderlist where boxid is not null
+    </select>
+
+    <select id="moneytuijian" resultType="com.sport.sports.Bean.Order">
+                select a.orderid as orderid,a.personchargenow,a.startaddress as startaddress ,a.endaddress as endaddress,a.money as money,b.username as offerman from orderlist a ,easyuser b WHERE ( startaddress LIKE "%"#{startaddress,jdbcType=VARCHAR}"%"
+                and
+					endaddress LIKE  "%"#{endaddress,jdbcType=VARCHAR}"%" and money is not null and a.personchargenow=b.id
+					)GROUP BY b.username  order by money ASC LIMIT 3
+    </select>
+
+    <select id="get10" resultType="java.lang.Integer">
+       select count(*) from orderlist where personchargenow='10'
+    </select>
+    <select id="get11" resultType="java.lang.Integer">
+       select count(*) from orderlist where personchargenow='11'
+    </select>
+    <select id="get12" resultType="java.lang.Integer">
+       select count(*) from orderlist where personchargenow='12'
+    </select>
+    <select id="get24" resultType="java.lang.Integer">
+       select count(*) from orderlist where personchargenow='24'
+    </select>
+</mapper>
